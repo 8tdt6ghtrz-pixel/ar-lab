@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AR зертханалық жұмыс 12 — 1-нұсқа: геометриялық фигуралар</title>
+
+  <!-- Алдымен A-Frame, содан кейін AR.js (реті маңызды) -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+
+  <script>
+    // Маркер табылғанда/жоғалғанда жазуды ауыстыратын компонент
+    AFRAME.registerComponent('marker-status', {
+      schema: { name: { type: 'string', default: 'Маркер' } },
+      init: function () {
+        const status = document.getElementById('status');
+        const name = this.data.name;
+        this.el.addEventListener('markerFound', () => {
+          status.textContent = name + ' табылды';
+        });
+        this.el.addEventListener('markerLost', () => {
+          status.textContent = 'Маркерді камераға көрсетіңіз';
+        });
+      }
+    });
+
+    // Нысанға басқанда түсін ауыстыру (қосымша тапсырма)
+    AFRAME.registerComponent('click-color', {
+      init: function () {
+        const colors = ['#e63946', '#2a9d8f', '#f4a261', '#1d3557', '#8338ec'];
+        let i = 0;
+        this.el.addEventListener('click', () => {
+          i = (i + 1) % colors.length;
+          this.el.setAttribute('color', colors[i]);
+        });
+      }
+    });
+  </script>
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+  <div id="status"
+       style="position: fixed; top: 10px; left: 10px; z-index: 10;
+              padding: 6px 12px; background: rgba(0,0,0,0.6); color: #fff;
+              font-family: sans-serif; border-radius: 6px;">
+    Маркерді камераға көрсетіңіз
+  </div>
+
+  <!-- barcode маркері үшін detectionMode пен matrixCodeType қосылған -->
+  <a-scene embedded
+           arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
+
+    <!-- 1) Өз маркеріміз: barcode, нөмірі 5 -->
+    <a-marker type="barcode" value="5" marker-status="name: Өз маркерім (barcode 5)">
+
+      <!-- Куб (айналады) -->
+      <a-box position="-1 0.5 0" width="0.7" height="0.7" depth="0.7"
+             color="#e63946" click-color
+             animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"></a-box>
+      <a-text value="Куб" position="-1 1.2 0" align="center" color="#000000" width="3"></a-text>
+
+      <!-- Цилиндр (айналады) -->
+      <a-cylinder position="0 0.5 0" radius="0.35" height="0.8"
+                  color="#2a9d8f" click-color
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"></a-cylinder>
+      <a-text value="Цилиндр" position="0 1.2 0" align="center" color="#000000" width="3"></a-text>
+
+      <!-- Конус (айналады) -->
+      <a-cone position="1 0.5 0" radius-bottom="0.4" radius-top="0" height="0.9"
+              color="#f4a261" click-color
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-cone>
+      <a-text value="Конус" position="1 1.2 0" align="center" color="#000000" width="3"></a-text>
+    </a-marker>
+
+    <!-- 2) Тексеру үшін қосымша Hiro маркері -->
+    <a-marker preset="hiro" marker-status="name: Hiro маркері">
+      <a-box position="0 0.5 0" color="#e63946"
+             animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear"></a-box>
+      <a-sphere position="0 1.5 0" radius="0.3" color="#1d3557"></a-sphere>
+      <a-text value="AR lab" position="0 2.2 0" align="center" color="#000000" width="4"></a-text>
+    </a-marker>
+
+    <!-- Камера міндетті түрде болуы керек -->
+    <a-entity camera></a-entity>
+  </a-scene>
+</body>
+</html>
